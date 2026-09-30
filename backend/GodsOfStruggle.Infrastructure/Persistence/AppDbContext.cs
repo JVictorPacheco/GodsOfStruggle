@@ -1,3 +1,4 @@
+using GodsOfStruggle.Domain.Common;
 using GodsOfStruggle.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -11,6 +12,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        foreach (Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes()
+            .Where(e => typeof(BaseEntity).IsAssignableFrom(e.ClrType)))
+        {
+            modelBuilder.Entity(entityType.ClrType).Ignore(nameof(BaseEntity.DomainEvents));
+        }
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }
