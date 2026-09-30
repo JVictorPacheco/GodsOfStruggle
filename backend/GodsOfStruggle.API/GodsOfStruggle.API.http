@@ -1,0 +1,6 @@
+@GodsOfStruggle.API_HostAddress = http://localhost:5270
+
+GET {{GodsOfStruggle.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

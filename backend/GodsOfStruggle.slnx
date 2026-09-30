@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="GodsOfStruggle.API/GodsOfStruggle.API.csproj" />
+  <Project Path="GodsOfStruggle.Application.Tests/GodsOfStruggle.Application.Tests.csproj" />
+  <Project Path="GodsOfStruggle.Application/GodsOfStruggle.Application.csproj" />
+  <Project Path="GodsOfStruggle.Domain.Tests/GodsOfStruggle.Domain.Tests.csproj" />
+  <Project Path="GodsOfStruggle.Domain/GodsOfStruggle.Domain.csproj" />
+  <Project Path="GodsOfStruggle.Infrastructure/GodsOfStruggle.Infrastructure.csproj" />
+</Solution>
