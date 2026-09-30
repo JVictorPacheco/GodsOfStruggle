@@ -2,6 +2,7 @@ using GodsOfStruggle.Application.Interfaces;
 using GodsOfStruggle.Infrastructure.Auth;
 using GodsOfStruggle.Infrastructure.Persistence;
 using GodsOfStruggle.Infrastructure.Persistence.Repositories;
+using GodsOfStruggle.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,8 @@ public static class InfrastructureServiceExtensions
                 npgsql => npgsql.EnableRetryOnFailure(3)));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
