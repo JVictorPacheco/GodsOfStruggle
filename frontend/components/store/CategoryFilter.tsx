@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import type { Category } from "@/types";
 
 interface CategoryFilterProps {
@@ -12,22 +11,28 @@ interface CategoryFilterProps {
 export function CategoryFilter({ categories, selected, onChange }: CategoryFilterProps) {
   return (
     <div className="flex flex-wrap gap-2">
-      <Badge
-        variant={selected === null ? "default" : "outline"}
-        className="cursor-pointer px-3 py-1"
+      <button
         onClick={() => onChange(null)}
+        className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+          selected === null
+            ? "bg-orange-500 text-black border-orange-500"
+            : "border-white/10 text-zinc-400 hover:border-orange-500/50 hover:text-white"
+        }`}
       >
         Todos
-      </Badge>
+      </button>
       {categories.map((cat) => (
-        <Badge
+        <button
           key={cat.id}
-          variant={selected === cat.id ? "default" : "outline"}
-          className="cursor-pointer px-3 py-1"
           onClick={() => onChange(cat.id)}
+          className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+            selected === cat.id
+              ? "bg-orange-500 text-black border-orange-500"
+              : "border-white/10 text-zinc-400 hover:border-orange-500/50 hover:text-white"
+          }`}
         >
           {cat.name}
-        </Badge>
+        </button>
       ))}
     </div>
   );

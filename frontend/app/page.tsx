@@ -1,69 +1,77 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getProducts } from "@/lib/api/products";
+import { ProductCard } from "@/components/store/ProductCard";
 
-export default function Home() {
+export default async function HomePage() {
+  const featured = await getProducts({ pageSize: 4 }).catch(() => null);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div>
+      {/* Hero */}
+      <section className="relative bg-[#0a0a0a] text-white py-28 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/40 via-transparent to-orange-950/40 pointer-events-none" />
+        <div className="relative max-w-4xl mx-auto text-center">
+          <div className="inline-block px-3 py-1 rounded-full border border-orange-500/30 text-orange-400 text-xs font-semibold tracking-widest mb-6 uppercase">
+            Equipamentos Premium
+          </div>
+          <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 leading-tight">
+            ELEVE SEU JOGO.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-500">
+              DOMINE O TATAME.
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto">
+            Kimonos e equipamentos premium para atletas que levam as artes marciais a sério.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-black font-bold px-8 py-3 rounded-full transition-colors text-sm uppercase tracking-wide"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Ver Produtos
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
-      </main>
+      </section>
+
+      {/* Featured Products */}
+      {featured && featured.items.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-white">Produtos em Destaque</h2>
+            <Link href="/products" className="text-sm text-zinc-500 hover:text-orange-400 transition-colors">
+              Ver todos →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {featured.items.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Categories banner */}
+      <section className="border-t border-white/10 py-16 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          {[
+            { label: "Kimonos BJJ", icon: "🥋" },
+            { label: "Kimonos Judô", icon: "🏯" },
+            { label: "Rashguards", icon: "👕" },
+            { label: "Acessórios", icon: "🎯" },
+          ].map(({ label, icon }) => (
+            <Link
+              key={label}
+              href={`/products?search=${encodeURIComponent(label)}`}
+              className="group flex flex-col items-center gap-3 p-6 rounded-xl border border-white/10 hover:border-orange-500/50 hover:bg-orange-500/5 transition-all"
+            >
+              <span className="text-3xl">{icon}</span>
+              <span className="text-sm font-semibold text-zinc-300 group-hover:text-orange-400 transition-colors">{label}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
