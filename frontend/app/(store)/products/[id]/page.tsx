@@ -14,13 +14,17 @@ export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<"not_found" | "error" | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     getProductById(id)
       .then((p) => { setProduct(p); setSelectedVariant(p.variants.find(v => v.isActive) ?? null); })
-      .catch(() => {})
+      .catch((err: unknown) => {
+        const status = err instanceof Error ? parseInt(err.message.replace(/\D/g, "")) : 0;
+        setError(status === 404 ? "not_found" : "error");
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -37,11 +41,15 @@ export default function ProductDetailPage() {
     </div>
   );
 
-  if (!product) return (
-    <div className="max-w-7xl mx-auto px-4 py-20 text-center text-zinc-500">
-      Produto não encontrado.
+  if (error) return (
+    <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+      <p className="text-zinc-500 text-lg">
+        {error === "not_found" ? "Produto não encontrado." : "Erro ao carregar o produto. Tente novamente."}
+      </p>
     </div>
   );
+
+  if (!product) return null;
 
   const attributeKeys = [...new Set(product.variants.flatMap(v => Object.keys(v.attributes)))];
 

@@ -4,7 +4,12 @@ public sealed record Money(decimal Amount, string Currency = "BRL")
 {
     public static Money Zero => new(0);
 
-    public Money Add(Money other) => this with { Amount = Amount + other.Amount };
+    public Money Add(Money other)
+    {
+        if (Currency != other.Currency)
+            throw new Exceptions.DomainException($"Não é possível somar valores em moedas diferentes: {Currency} e {other.Currency}.");
+        return this with { Amount = Amount + other.Amount };
+    }
     public Money Subtract(Money other) => this with { Amount = Amount - other.Amount };
     public Money Multiply(int quantity) => this with { Amount = Amount * quantity };
 

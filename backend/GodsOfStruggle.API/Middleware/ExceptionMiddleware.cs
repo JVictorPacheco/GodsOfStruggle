@@ -22,6 +22,12 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
             var errors = ex.Errors.Select(e => new { field = e.PropertyName, message = e.ErrorMessage });
             await context.Response.WriteAsync(JsonSerializer.Serialize(new { errors }, _jsonOptions));
         }
+        catch (GodsOfStruggle.Domain.Exceptions.NotFoundException ex)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = ex.Message }, _jsonOptions));
+        }
         catch (DomainException ex)
         {
             context.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
