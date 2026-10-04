@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { getProductById } from "@/lib/api/products";
+import { useCart } from "@/contexts/CartContext";
 import type { Product, ProductVariant } from "@/types";
 
 function formatPrice(amount: number, currency: string) {
@@ -12,15 +13,21 @@ function formatPrice(amount: number, currency: string) {
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { addItem, loading: cartLoading } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [error, setError] = useState<"not_found" | "error" | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     getProductById(id)
       .then((p) => { setProduct(p); setSelectedVariant(p.variants.find(v => v.isActive) ?? null); })
-      .catch(() => {})
+      .catch((err: unknown) => {
+        const status = err instanceof Error ? parseInt(err.message.replace(/\D/g, "")) : 0;
+        setError(status === 404 ? "not_found" : "error");
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -37,11 +44,15 @@ export default function ProductDetailPage() {
     </div>
   );
 
-  if (!product) return (
-    <div className="max-w-7xl mx-auto px-4 py-20 text-center text-zinc-500">
-      Produto não encontrado.
+  if (error) return (
+    <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+      <p className="text-zinc-500 text-lg">
+        {error === "not_found" ? "Produto não encontrado." : "Erro ao carregar o produto. Tente novamente."}
+      </p>
     </div>
   );
+
+  if (!product) return null;
 
   const attributeKeys = [...new Set(product.variants.flatMap(v => Object.keys(v.attributes)))];
 
@@ -135,12 +146,24 @@ export default function ProductDetailPage() {
           )}
 
           <button
-            disabled={!selectedVariant || selectedVariant.stockQuantity === 0}
+            disabled={!selectedVariant || selectedVariant.stockQuantity === 0 || cartLoading}
+            onClick={async () => {
+              if (!selectedVariant || !product) return;
+              await addItem({
+                productVariantId: selectedVariant.id,
+                productName: product.name,
+                variantDescription: Object.values(selectedVariant.attributes).join(" / "),
+                quantity: 1,
+                price: selectedVariant.price,
+              }, "");
+              setAddedToCart(true);
+              setTimeout(() => setAddedToCart(false), 2000);
+            }}
             className="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wide transition-all
               bg-orange-500 hover:bg-orange-400 text-black
               disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed"
           >
-            Adicionar ao Carrinho
+            {addedToCart ? "Adicionado! ✓" : cartLoading ? "Adicionando..." : "Adicionar ao Carrinho"}
           </button>
         </div>
       </div>
