@@ -51,6 +51,33 @@ export interface ProductListItem {
   isActive: boolean;
 }
 
+export interface CartItem {
+  id: string;
+  productVariantId: string;
+  productName: string;
+  variantDescription: string;
+  quantity: number;
+  unitPrice: number;
+  currency: string;
+  totalPrice: number;
+}
+
+export interface Cart {
+  id: string;
+  items: CartItem[];
+  total: number;
+  currency: string;
+  itemCount: number;
+}
+
+export interface AddToCartRequest {
+  productVariantId: string;
+  productName: string;
+  variantDescription: string;
+  quantity: number;
+  price: number;
+}
+
 export interface PagedResult<T> {
   items: T[];
   totalCount: number;
