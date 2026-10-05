@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import type { CartItem } from "@/types";
 
 function formatPrice(amount: number, currency: string) {
@@ -34,17 +37,17 @@ function CartItemRow({ item, onRemove }: { item: CartItem; onRemove: (id: string
 }
 
 export default function CartPage() {
+  const { user, loading: authLoading } = useAuth();
   const { cart, loading, removeItem, clearCart } = useCart();
+  const router = useRouter();
 
-  const handleRemove = (itemId: string) => {
-    removeItem(itemId, "");
-  };
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login?redirect=/cart");
+    }
+  }, [user, authLoading, router]);
 
-  const handleClear = () => {
-    clearCart("");
-  };
-
-  if (loading) {
+  if (authLoading || !user || loading) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
         <div className="space-y-4">
@@ -81,7 +84,7 @@ export default function CartPage() {
           Carrinho <span className="text-orange-500">({cart.itemCount})</span>
         </h1>
         <button
-          onClick={handleClear}
+          onClick={() => clearCart()}
           className="text-sm text-zinc-600 hover:text-red-500 transition-colors"
         >
           Limpar tudo
@@ -90,7 +93,7 @@ export default function CartPage() {
 
       <div className="mb-8">
         {cart.items.map((item) => (
-          <CartItemRow key={item.id} item={item} onRemove={handleRemove} />
+          <CartItemRow key={item.id} item={item} onRemove={(id) => removeItem(id)} />
         ))}
       </div>
 

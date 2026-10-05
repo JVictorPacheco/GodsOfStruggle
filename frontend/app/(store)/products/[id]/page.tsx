@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { getProductById } from "@/lib/api/products";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Product, ProductVariant } from "@/types";
 
 function formatPrice(amount: number, currency: string) {
@@ -13,7 +14,9 @@ function formatPrice(amount: number, currency: string) {
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const { addItem, loading: cartLoading } = useCart();
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -149,13 +152,14 @@ export default function ProductDetailPage() {
             disabled={!selectedVariant || selectedVariant.stockQuantity === 0 || cartLoading}
             onClick={async () => {
               if (!selectedVariant || !product) return;
+              if (!user) { router.push(`/login?redirect=/products/${id}`); return; }
               await addItem({
                 productVariantId: selectedVariant.id,
                 productName: product.name,
                 variantDescription: Object.values(selectedVariant.attributes).join(" / "),
                 quantity: 1,
                 price: selectedVariant.price,
-              }, "");
+              });
               setAddedToCart(true);
               setTimeout(() => setAddedToCart(false), 2000);
             }}
