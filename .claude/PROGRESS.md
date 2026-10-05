@@ -1,9 +1,9 @@
 # GodsOfStruggle — Progress Tracker
 
 ## Status Atual
-**Fase:** Setup completo — pronto para implementar Domínio  
-**Branch ativa:** `develop`  
-**Última atualização:** 2026-09-30
+**Fase:** GOS-005 em andamento — Auth Frontend (branch: feature/GOS-005-auth-frontend)
+**Branch ativa:** `feature/GOS-005-auth-frontend`
+**Última atualização:** 2026-10-04
 
 ---
 
