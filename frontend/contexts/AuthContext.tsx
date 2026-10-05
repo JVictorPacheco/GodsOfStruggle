@@ -22,16 +22,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (event === "SIGNED_IN" && session?.access_token) {
+      setLoading(false);
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session?.access_token) {
         syncUser(session.access_token).catch(() => {});
       }
     });

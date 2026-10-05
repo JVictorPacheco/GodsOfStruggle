@@ -47,19 +47,7 @@ export default function CartPage() {
     }
   }, [user, authLoading, router]);
 
-  if (authLoading || (!user && !authLoading)) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-zinc-900 rounded-xl animate-pulse" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
+  if (authLoading || !user || loading) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
         <div className="space-y-4">
