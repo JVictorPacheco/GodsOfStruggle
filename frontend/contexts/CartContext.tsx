@@ -3,24 +3,26 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import type { Cart, AddToCartRequest } from "@/types";
 import * as cartApi from "@/lib/api/cart";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CartContextValue {
   cart: Cart | null;
   itemCount: number;
   loading: boolean;
-  addItem: (request: AddToCartRequest, token: string) => Promise<void>;
-  removeItem: (itemId: string, token: string) => Promise<void>;
-  clearCart: (token: string) => Promise<void>;
-  refreshCart: (token: string) => Promise<void>;
+  addItem: (request: AddToCartRequest) => Promise<void>;
+  removeItem: (itemId: string) => Promise<void>;
+  clearCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { session } = useAuth();
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
 
   const refreshCart = useCallback(async (token: string) => {
+    if (!token) { setCart(null); return; }
     try {
       const data = await cartApi.getCart(token);
       setCart(data);
@@ -29,7 +31,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const addItem = useCallback(async (request: AddToCartRequest, token: string) => {
+  useEffect(() => {
+    refreshCart(session?.access_token ?? "");
+  }, [session, refreshCart]);
+
+  const addItem = useCallback(async (request: AddToCartRequest) => {
+    const token = session?.access_token;
+    if (!token) return;
     setLoading(true);
     try {
       await cartApi.addToCart(request, token);
@@ -37,9 +45,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [refreshCart]);
+  }, [session, refreshCart]);
 
-  const removeItem = useCallback(async (itemId: string, token: string) => {
+  const removeItem = useCallback(async (itemId: string) => {
+    const token = session?.access_token;
+    if (!token) return;
     setLoading(true);
     try {
       await cartApi.removeFromCart(itemId, token);
@@ -47,9 +57,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [refreshCart]);
+  }, [session, refreshCart]);
 
-  const clear = useCallback(async (token: string) => {
+  const clear = useCallback(async () => {
+    const token = session?.access_token;
+    if (!token) return;
     setLoading(true);
     try {
       await cartApi.clearCart(token);
@@ -57,7 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [session]);
 
   return (
     <CartContext.Provider value={{
@@ -67,7 +79,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       addItem,
       removeItem,
       clearCart: clear,
-      refreshCart,
     }}>
       {children}
     </CartContext.Provider>
