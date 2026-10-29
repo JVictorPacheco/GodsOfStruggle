@@ -10,6 +10,9 @@ public class CreateCategoryCommandHandler(ICategoryRepository categoryRepository
 {
     public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
+
+        await ValidatParentCategoryIdAsync(request.ParentCategoryId, cancellationToken);
+
         Category category = Category.Create(request.Name, request.Description, request.Slug, request.ParentCategoryId);
         await categoryRepository.AddAsync(category, cancellationToken);
         return ToDto(category);
@@ -17,4 +20,20 @@ public class CreateCategoryCommandHandler(ICategoryRepository categoryRepository
 
     private static CategoryDto ToDto(Category c) =>
         new(c.Id, c.Name, c.Description, c.Slug, c.ParentCategoryId, c.IsActive);
+
+
+    private async Task ValidatParentCategoryIdAsync(Guid? parentCategoryId, CancellationToken cancellationToken)
+    {
+        if (parentCategoryId.HasValue)
+        {
+        
+            bool parentCategoryExists = await categoryRepository.ExistsAsync(parentCategoryId.Value, cancellationToken);
+
+            if (!parentCategoryExists)
+            {
+            
+                throw new InvalidOperationException("A categoria pai não existe.");
+            }
+        }
+    }
 }

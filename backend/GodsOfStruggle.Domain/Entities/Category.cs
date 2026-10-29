@@ -18,9 +18,16 @@ public class Category : BaseEntity
 
     public static Category Create(string name, string description, string slug, Guid? parentCategoryId = null)
     {
+
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("O nome da categoria não pode ser vazio.", nameof(name));
+        }
+
         return new Category
         {
-            Name = name,
+            Name = name.Trim(),
             Description = description,
             Slug = slug,
             ParentCategoryId = parentCategoryId
