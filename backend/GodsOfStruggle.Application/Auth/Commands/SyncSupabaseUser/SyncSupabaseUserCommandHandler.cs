@@ -12,7 +12,7 @@ public class SyncSupabaseUserCommandHandler(IUserRepository userRepository)
     {
         User? existing = await userRepository.GetByIdAsync(request.UserId, cancellationToken);
 
-        if (existing is null)
+        if (existing is null)   
         {
             User newUser = User.Create(request.UserId, request.Email, request.Name, request.Phone);
             await userRepository.AddAsync(newUser, cancellationToken);
