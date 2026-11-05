@@ -26,4 +26,9 @@ public class CategoryRepository(AppDbContext context) : ICategoryRepository
         context.Categories.Update(category);
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Categories.AnyAsync(c => c.Id == id, cancellationToken);
+    }
 }
