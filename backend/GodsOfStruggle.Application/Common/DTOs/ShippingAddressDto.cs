@@ -1,8 +1,10 @@
-﻿using System;
+﻿namespace GodsOfStruggle.Application.Common.DTOs;
 
-public class Class1
-{
-	public Class1()
-	{
-	}
-}
+public record ShippingAddressDto(
+    string Street,
+    string Number,
+    string? Complement,
+    string Neighborhood,
+    string City,
+    string State,
+    string ZipCode);
