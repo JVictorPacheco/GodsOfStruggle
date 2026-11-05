@@ -40,6 +40,8 @@ GodsOfStruggle/
 **Spec Driven Development** — nenhum código sem spec validada.  
 Use `/spec` antes de qualquer feature nova.
 
+**Estudo em andamento (SOLID/checkout):** ver `STUDY-SOLID.md` na raiz antes de mexer em `Orders/` ou no checkout. A branch `feat-solid-principles` é de estudo: o João escreve o código, a IA orienta e revisa.
+
 ## Arquitetura — Regras Invioláveis
 
 ### Dependências (Clean Architecture)
